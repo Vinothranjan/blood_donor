@@ -317,12 +317,43 @@ window.LifePulseApp = {
 
         this.searchHasBeenDone = true;
 
-        // Filter donors
+        // Filter donors with blood group compatibility
         const allDonors = window.LifePulseData.donors || [];
-        const districtDonors = allDonors.filter(d => d.districtId === districtId && d.readyToDonate);
+
+        function isGroupCompatible(donorGroup, targetGroup) {
+            if (!targetGroup || targetGroup === 'ALL' || targetGroup === '') return true;
+            if (donorGroup === targetGroup) return true;
+            if (window.LifePulseAIMatching && window.LifePulseAIMatching.compatibilityMatrix) {
+                const compat = window.LifePulseAIMatching.compatibilityMatrix[donorGroup];
+                if (compat && compat[targetGroup] !== undefined) {
+                    return compat[targetGroup] > 0;
+                }
+            }
+            return false;
+        }
+
+        let districtDonors = allDonors.filter(d => 
+            d.districtId === districtId && 
+            d.readyToDonate && 
+            isGroupCompatible(d.bloodGroup, bloodGroup)
+        );
+
+        // Sort exact blood group matches first
+        if (bloodGroup && bloodGroup !== 'ALL') {
+            districtDonors.sort((a, b) => {
+                if (a.bloodGroup === bloodGroup && b.bloodGroup !== bloodGroup) return -1;
+                if (a.bloodGroup !== bloodGroup && b.bloodGroup === bloodGroup) return 1;
+                return 0;
+            });
+        }
+
         const matchedDonors = districtDonors.length > 0
             ? districtDonors
-            : allDonors.filter(d => d.stateId === stateId && d.readyToDonate);
+            : allDonors.filter(d => 
+                d.stateId === stateId && 
+                d.readyToDonate && 
+                isGroupCompatible(d.bloodGroup, bloodGroup)
+            );
 
         // Update Map Markers
         if (window.LifePulseMap) {
@@ -356,8 +387,8 @@ window.LifePulseApp = {
                 <div style="display:flex;align-items:center;gap:16px;">
                     <div class="blood-badge">${d.bloodGroup}</div>
                     <div class="donor-info">
-                        <h4>${d.name} ${d.isVerified ? '<span style="color:var(--emerald);font-size:12px;">✓ Verified</span>' : ''}</h4>
-                        <p>📍 ${d.districtId.toUpperCase()} • ${d.donationsCount} Donations</p>
+                        <h4>${d.name} ${d.isVerified ? '<span style="color:var(--emerald);font-size:12px;">✓ Verified</span>' : ''} ${d.isDemo ? '<span style="background:rgba(255,255,255,0.1);color:var(--text-muted);font-size:10px;padding:1px 6px;border-radius:4px;">Demo Record</span>' : ''}</h4>
+                        <p>📍 ${(d.district || d.districtId).toUpperCase()} • ${d.donationsCount || 5} Donations</p>
                         <p style="color:var(--emerald);font-weight:700;font-size:12px;margin-top:3px;">● ${window.LifePulseI18n ? window.LifePulseI18n.getText('statusReadyDonate') : 'Ready to Donate'}</p>
                     </div>
                 </div>

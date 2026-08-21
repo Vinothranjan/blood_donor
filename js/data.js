@@ -78,6 +78,7 @@ window.LifePulseData = {
         { id: 'nilgiris', stateId: 'TN', name: 'The Nilgiris (Ooty)', lat: 11.4102, lng: 76.6950 },
         { id: 'theni', stateId: 'TN', name: 'Theni', lat: 10.0104, lng: 77.4768 },
         { id: 'tiruvarur', stateId: 'TN', name: 'Tiruvarur', lat: 10.7726, lng: 79.6365 },
+        { id: 'tiruvallur', stateId: 'TN', name: 'Tiruvallur', lat: 13.1432, lng: 79.9056 },
 
         // Kerala
         { id: 'ernakulam', stateId: 'KL', name: 'Ernakulam (Kochi)', lat: 9.9312, lng: 76.2673 },
