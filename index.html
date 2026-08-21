@@ -874,12 +874,22 @@
          AUTHENTICATION MODAL
          =================================================================== -->
     <div id="auth-modal-overlay" class="modal-overlay hidden">
-        <div class="modal-content">
+        <div class="modal-content" style="max-width:480px;">
             <button class="modal-close-btn" onclick="closeAuthModal()">×</button>
 
-            <div style="margin-bottom:6px;font-size:28px;" id="auth-modal-icon">👤</div>
+            <div style="margin-bottom:6px;font-size:28px;" id="auth-modal-icon">🩸</div>
             <h3 class="modal-title" id="auth-modal-title">Sign In / Register</h3>
             <p class="modal-subtitle" id="auth-modal-subtitle">Access the LifePulse AI platform</p>
+
+            <!-- Mode Switcher: Sign In vs Register -->
+            <div style="display:flex;background:var(--surface-3);padding:4px;border-radius:12px;margin:16px 0;gap:4px;" id="auth-mode-switcher-container">
+                <button type="button" class="auth-tab-btn active" id="auth-mode-btn-login" style="flex:1;padding:10px;font-size:13px;border-radius:8px;font-weight:700;" onclick="setAuthMode('login')">
+                    🔑 Existing User Sign In
+                </button>
+                <button type="button" class="auth-tab-btn" id="auth-mode-btn-register" style="flex:1;padding:10px;font-size:13px;border-radius:8px;font-weight:700;" onclick="setAuthMode('register')">
+                    📝 New Registration
+                </button>
+            </div>
 
             <!-- Role Tabs (Hidden for dedicated portal logins) -->
             <div class="auth-tabs" id="auth-role-tabs-container">
@@ -888,8 +898,6 @@
                 <button class="auth-tab-btn" id="auth-tab-hospital_bank" onclick="switchAuthTab('hospital_bank')">🏦 Blood Bank</button>
                 <button class="auth-tab-btn" id="auth-tab-admin" onclick="switchAuthTab('admin')">🛡️ Admin</button>
             </div>
-
-
 
             <!-- Auth note -->
             <div id="auth-note-receiver" class="no-password-note">
@@ -906,17 +914,50 @@
             </div>
 
             <form id="auth-form" onsubmit="handleAuthSubmit(event)">
-                <div class="form-group">
+                <div class="form-group" id="auth-group-name">
                     <label class="form-label" id="auth-name-label" data-i18n="labelFullNameOrg">Full Name / Organization</label>
                     <input type="text" id="auth-name-input" class="form-control" placeholder="e.g. Dr. Vikram Seth or Apollo Hospitals" required>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group" id="auth-group-phone">
                     <label class="form-label" id="auth-phone-label" data-i18n="labelPhoneEmailId">Phone Number / Email / Blood Bank ID</label>
                     <input type="text" id="auth-phone-input" class="form-control" placeholder="+91 98401 22104 or BB-TN-CHENNAI-001" required>
                 </div>
 
-                <!-- Donor extra fields -->
+                <!-- Registration extra fields (Location: State & District, Age, Gender) -->
+                <div id="auth-register-extra-fields" class="hidden">
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                        <div class="form-group">
+                            <label class="form-label">State</label>
+                            <select id="auth-reg-state-select" class="form-control" onchange="if(window.LifePulseApp && window.LifePulseApp.populateDistrictsForRegState) window.LifePulseApp.populateDistrictsForRegState(this.value)">
+                                <option value="TN">Tamil Nadu</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">District</label>
+                            <select id="auth-reg-district-select" class="form-control">
+                                <option value="chennai">Chennai</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                        <div class="form-group">
+                            <label class="form-label">Age</label>
+                            <input type="number" id="auth-reg-age-input" class="form-control" placeholder="e.g. 26" min="18" max="65" value="26">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Gender</label>
+                            <select id="auth-reg-gender-select" class="form-control">
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Donor extra fields (Blood Group) -->
                 <div id="auth-donor-extra-fields" class="hidden">
                     <div class="form-group">
                         <label class="form-label">Blood Group</label>
@@ -933,7 +974,7 @@
                     </div>
                 </div>
 
-                <!-- Password field (shown for donor, bank & admin) -->
+                <!-- Password field -->
                 <div id="auth-password-field" class="hidden">
                     <div class="form-group">
                         <label class="form-label" id="auth-password-label" data-i18n="labelPassword">Password</label>
@@ -946,10 +987,18 @@
                     <!-- Admin note shown in password field -->
                 </div>
 
-                <button type="submit" class="btn-primary" style="width:100%;margin-top:8px;padding:14px;font-size:15px;">
-                    <span id="auth-submit-label">Continue to Portal</span>
+                <button type="submit" class="btn-primary" style="width:100%;margin-top:8px;padding:14px;font-size:15px;" id="auth-submit-btn">
+                    <span id="auth-submit-label">Sign In to Portal</span>
                 </button>
             </form>
+
+            <!-- Bottom Toggle Links -->
+            <div style="margin-top:16px;padding-top:14px;border-top:1px dashed var(--border);text-align:center;font-size:13px;color:var(--text-muted);" id="auth-footer-toggle-wrap">
+                <span id="auth-footer-text">New donor?</span> 
+                <a href="javascript:void(0)" style="color:var(--primary);font-weight:700;text-decoration:none;" id="auth-footer-link" onclick="toggleAuthMode()">
+                    Register as a New Donor
+                </a>
+            </div>
         </div>
     </div>
 

@@ -662,6 +662,16 @@ window.LifePulseApp = {
     // =========================================================================
     restoreUserSession: function () {
         try {
+            // Restore custom registered donors from localStorage
+            const savedCustoms = JSON.parse(localStorage.getItem('lifepulse_registered_donors') || '[]');
+            if (savedCustoms.length > 0 && window.LifePulseData && window.LifePulseData.donors) {
+                savedCustoms.forEach(cDonor => {
+                    if (!window.LifePulseData.donors.some(d => d.id === cDonor.id)) {
+                        window.LifePulseData.donors.unshift(cDonor);
+                    }
+                });
+            }
+
             const session = localStorage.getItem('lifepulse_user');
             if (session) {
                 this.currentUser = JSON.parse(session);
@@ -904,6 +914,92 @@ function closeAuthModal() {
     if (modal) modal.classList.add('hidden');
 }
 
+let activeAuthMode = 'login';
+window.activeAuthMode = activeAuthMode;
+
+function setAuthMode(mode) {
+    activeAuthMode = mode;
+    window.activeAuthMode = mode;
+
+    const btnLogin = document.getElementById('auth-mode-btn-login');
+    const btnReg = document.getElementById('auth-mode-btn-register');
+    if (btnLogin) btnLogin.classList.toggle('active', mode === 'login');
+    if (btnReg) btnReg.classList.toggle('active', mode === 'register');
+
+    const regExtra = document.getElementById('auth-register-extra-fields');
+    if (regExtra) {
+        regExtra.classList.toggle('hidden', mode !== 'register' || activeAuthRole !== 'donor');
+        if (mode === 'register' && activeAuthRole === 'donor') {
+            populateDistrictsForRegState('TN');
+        }
+    }
+
+    const footerText = document.getElementById('auth-footer-text');
+    const footerLink = document.getElementById('auth-footer-link');
+    if (footerText && footerLink) {
+        if (mode === 'login') {
+            footerText.textContent = activeAuthRole === 'hospital_bank' ? 'New Blood Bank Facility?' : 'New Donor?';
+            footerLink.textContent = activeAuthRole === 'hospital_bank' ? 'Register Your Blood Bank Facility' : 'Register as a New Donor';
+        } else {
+            footerText.textContent = 'Already have an account?';
+            footerLink.textContent = 'Click here to Sign In';
+        }
+    }
+
+    updateAuthModalUI();
+}
+
+function toggleAuthMode() {
+    if (activeAuthRole === 'hospital_bank' && activeAuthMode === 'login') {
+        closeAuthModal();
+        openBankRegistrationModal();
+        return;
+    }
+    setAuthMode(activeAuthMode === 'login' ? 'register' : 'login');
+}
+
+function populateDistrictsForRegState(stateId) {
+    const distSelect = document.getElementById('auth-reg-district-select');
+    if (!distSelect || !window.LifePulseData) return;
+    const districts = (window.LifePulseData.districts || []).filter(d => d.stateId === (stateId || 'TN'));
+    distSelect.innerHTML = districts.map(d => `<option value="${d.id}">${d.name}</option>`).join('');
+}
+window.LifePulseApp.populateDistrictsForRegState = populateDistrictsForRegState;
+
+function updateAuthModalUI() {
+    const role = activeAuthRole;
+    const mode = activeAuthMode;
+
+    const icons = { receiver: '🏥', donor: '🩸', hospital_bank: '🏦', admin: '🛡️' };
+    const icon = document.getElementById('auth-modal-icon');
+    const title = document.getElementById('auth-modal-title');
+    const subtitle = document.getElementById('auth-modal-subtitle');
+    const submit = document.getElementById('auth-submit-label');
+
+    if (icon) icon.textContent = icons[role] || '👤';
+
+    if (mode === 'register') {
+        if (role === 'donor') {
+            if (title) title.textContent = '📝 New Donor Registration';
+            if (subtitle) subtitle.textContent = 'Create your donor profile & join emergency network';
+            if (submit) submit.textContent = '📝 Create Donor Account';
+        } else if (role === 'hospital_bank') {
+            if (title) title.textContent = '📝 Blood Bank Facility Registration';
+            if (subtitle) subtitle.textContent = 'Register your blood bank facility with admin approval';
+            if (submit) submit.textContent = '📝 Continue to Facility Registration';
+        } else {
+            if (title) title.textContent = '🏥 Patient / Hospital Access';
+            if (subtitle) subtitle.textContent = 'No password required — instant access';
+            if (submit) submit.textContent = 'Enter Patient Portal';
+        }
+    } else {
+        // Sign In Mode
+        if (title) title.textContent = role === 'donor' ? '🔑 Donor Sign In' : role === 'hospital_bank' ? '🔑 Blood Bank Portal Login' : role === 'admin' ? '🛡️ Admin Login' : '🏥 Patient Access';
+        if (subtitle) subtitle.textContent = role === 'receiver' ? 'No password required — instant access' : 'Enter your registered credentials to sign in';
+        if (submit) submit.textContent = role === 'receiver' ? 'Enter Patient Portal' : role === 'donor' ? 'Sign In as Donor' : role === 'hospital_bank' ? 'Sign In as Blood Bank' : 'Admin Login';
+    }
+}
+
 function switchAuthTab(role) {
     activeAuthRole = role;
     window.activeAuthRole = role;
@@ -952,6 +1048,9 @@ function switchAuthTab(role) {
     const donorExtra = document.getElementById('auth-donor-extra-fields');
     if (donorExtra) donorExtra.classList.toggle('hidden', role !== 'donor');
 
+    const regExtra = document.getElementById('auth-register-extra-fields');
+    if (regExtra) regExtra.classList.toggle('hidden', activeAuthMode !== 'register' || role !== 'donor');
+
     // Toggle password field — REQUIRED for donor, bank & admin, HIDDEN for patient
     const passField = document.getElementById('auth-password-field');
     if (passField) {
@@ -959,32 +1058,13 @@ function switchAuthTab(role) {
         passField.classList.toggle('hidden', !needsPassword);
         if (passInput) passInput.required = needsPassword;
 
-        // Update password label
         const passLabel = document.getElementById('auth-password-label');
         if (passLabel) {
             passLabel.textContent = role === 'admin' ? 'Admin Password (Demo: admin123)' : role === 'hospital_bank' ? 'Blood Bank Staff Password' : 'Password';
         }
     }
 
-    // Update modal header
-    const icons = { receiver: '🏥', donor: '🩸', hospital_bank: '🏦', admin: '🛡️' };
-    const titles = { receiver: 'Patient / Hospital Access', donor: 'Donor Sign In / Register', hospital_bank: 'Blood Bank Portal Login', admin: 'Admin Login' };
-    const subtitles = {
-        receiver: 'No password required — instant access for patients & hospitals',
-        donor: 'Securely access your donor dashboard',
-        hospital_bank: 'Registered blood bank staff login with password',
-        admin: 'Authorized administrator access only',
-    };
-
-    const icon = document.getElementById('auth-modal-icon');
-    const title = document.getElementById('auth-modal-title');
-    const subtitle = document.getElementById('auth-modal-subtitle');
-    const submit = document.getElementById('auth-submit-label');
-
-    if (icon) icon.textContent = icons[role] || '👤';
-    if (title) title.textContent = titles[role] || 'Sign In';
-    if (subtitle) subtitle.textContent = subtitles[role] || '';
-    if (submit) submit.textContent = role === 'receiver' ? 'Enter Patient Portal' : role === 'donor' ? 'Sign In as Donor' : role === 'hospital_bank' ? 'Sign In as Blood Bank' : 'Admin Login';
+    updateAuthModalUI();
 }
 
 function handleAuthSubmit(event) {
@@ -997,7 +1077,78 @@ function handleAuthSubmit(event) {
     const passInput = document.getElementById('auth-password-input');
     const password = passInput ? passInput.value.trim() : '';
 
-    // Password validation for donor, bank & admin
+    // Handle New Donor Registration
+    if (activeAuthMode === 'register' && activeAuthRole === 'donor') {
+        if (!name || !phone || !password) {
+            alert('❌ Full Name, Phone Number, and Password are required to register.');
+            return;
+        }
+
+        const stateSelect = document.getElementById('auth-reg-state-select');
+        const distSelect = document.getElementById('auth-reg-district-select');
+        const ageInput = document.getElementById('auth-reg-age-input');
+        const genderSelect = document.getElementById('auth-reg-gender-select');
+
+        const stateId = stateSelect ? stateSelect.value : 'TN';
+        const districtId = distSelect ? distSelect.value : 'chennai';
+        const age = ageInput ? parseInt(ageInput.value) || 26 : 26;
+        const gender = genderSelect ? genderSelect.value : 'Male';
+
+        // Find district display name
+        let districtName = districtId.toUpperCase();
+        if (window.LifePulseData && window.LifePulseData.districts) {
+            const matchDist = window.LifePulseData.districts.find(d => d.id === districtId);
+            if (matchDist) districtName = matchDist.name;
+        }
+
+        const newDonor = {
+            id: 'd_custom_' + Date.now(),
+            name: name,
+            age: age,
+            gender: gender,
+            bloodGroup: bloodGroup,
+            phone: phone,
+            stateId: stateId,
+            state: 'Tamil Nadu',
+            districtId: districtId,
+            district: districtName,
+            city: districtName,
+            readyToDonate: true,
+            availability: 'AVAILABLE',
+            lastDonated: '2026-05-01',
+            lastDonatedDaysAgo: 100,
+            weightKg: 68,
+            donationsCount: 1,
+            healthScore: 98,
+            isVerified: true,
+            isCustom: true,
+            password: password
+        };
+
+        // Add to in-memory donors
+        if (!window.LifePulseData.donors) window.LifePulseData.donors = [];
+        window.LifePulseData.donors.unshift(newDonor);
+
+        // Save custom registered donors to localStorage
+        try {
+            const savedCustoms = JSON.parse(localStorage.getItem('lifepulse_registered_donors') || '[]');
+            savedCustoms.unshift(newDonor);
+            localStorage.setItem('lifepulse_registered_donors', JSON.stringify(savedCustoms));
+        } catch(e) {}
+
+        completeLogin(name, 'donor', phone, bloodGroup);
+        showToast('🎉 Registration Successful', `Welcome to LifePulse AI, ${name}! Your ${bloodGroup} Donor Account has been created.`, 'success');
+        return;
+    }
+
+    // Handle Blood Bank Registration Redirection
+    if (activeAuthMode === 'register' && activeAuthRole === 'hospital_bank') {
+        closeAuthModal();
+        openBankRegistrationModal();
+        return;
+    }
+
+    // Password validation for donor, bank & admin in Login Mode
     if (activeAuthRole === 'admin') {
         if (!password) {
             alert('❌ Password is required for Admin login.');
@@ -1047,7 +1198,7 @@ function handleAuthSubmit(event) {
         return;
     }
 
-    if (activeAuthRole === 'donor') {
+    if (activeAuthRole === 'donor' && activeAuthMode === 'login') {
         if (!password) {
             alert('❌ Password is required for Donor login. Please enter your password.');
             return;
