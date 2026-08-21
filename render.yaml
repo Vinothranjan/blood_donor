@@ -1,0 +1,24 @@
+# Render Blueprint for LifePulse AI — Pan-India Smart Blood Finder
+# Deploy free static site or web service on Render
+
+services:
+  # Option 1: Static Site (Recommended - 100% Free, Instant Load)
+  - type: web
+    name: lifepulse-ai-static
+    env: static
+    buildCommand: ""
+    staticPublishPath: ./
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: no-cache, no-store, must-revalidate
+
+  # Option 2: Python Web Service (Optional)
+  # - type: web
+  #   name: lifepulse-ai-web
+  #   env: python
+  #   buildCommand: pip install -r requirements.txt
+  #   startCommand: python serve.py
+  #   envVars:
+  #     - key: PYTHON_VERSION
+  #       value: 3.11.0

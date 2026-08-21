@@ -1,0 +1,17 @@
+# ==============================================================================
+# LifePulse AI — Pan-India Smart Blood Finder
+# Client Deployment Requirements & Environment Dependencies
+# ==============================================================================
+
+# Core Runtime Environment: Python >= 3.8.0
+
+# HTTP & Web Communication Utilities
+requests>=2.31.0
+urllib3>=2.0.0
+certifi>=2024.2.2
+charset-normalizer>=3.3.0
+idna>=3.6
+
+# Build & Package Utilities
+setuptools>=68.0.0
+wheel>=0.42.0

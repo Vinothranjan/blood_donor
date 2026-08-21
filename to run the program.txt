@@ -1,0 +1,39 @@
+==============================================================================
+  LifePulse AI — Pan-India Smart Blood Finder
+  Client Deployment & Quick Start Guide
+==============================================================================
+
+STEP 1: INSTALL ENVIRONMENT DEPENDENCIES
+------------------------------------------------------------------------------
+Open Terminal / Command Prompt in the project folder and run:
+
+py -m pip install -r requirements.txt
+
+
+STEP 2: LAUNCH THE APPLICATION SERVER
+------------------------------------------------------------------------------
+Option A (Recommended — Auto-Port Assignment & No-Cache Dev Server):
+    python serve.py
+    (or: py serve.py)
+
+Option B (Standard Python HTTP Server):
+    python -m http.server 8000
+    (or: py -m http.server 8000)
+
+Option C (Direct Browser Launch):
+    Double-click `index.html` to open directly in any modern browser.
+
+
+STEP 3: OPEN IN BROWSER
+------------------------------------------------------------------------------
+Open your web browser and navigate to:
+    http://localhost:8000  (or http://127.0.0.1:8000)
+
+
+DEMO LOGIN CREDENTIALS
+------------------------------------------------------------------------------
+• Admin Portal:        Username: admin@lifepulse.org       | Password: admin123
+• Blood Bank Portal:   Facility ID: BB-TN-CHENNAI-001      | Password: bank123
+• Donor Portal:        Phone Number: +91 98401 22104       | Password: donor123
+• Patient / Hospital:  No password required (Instant Public Access)
+==============================================================================
