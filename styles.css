@@ -2190,6 +2190,52 @@ select.form-control option {
         display: none !important;
     }
 
+    /* Section Headers & Card Headers on Mobile */
+    .section-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 10px !important;
+    }
+
+    .section-header > div {
+        flex-wrap: wrap !important;
+        width: 100% !important;
+    }
+
+    .section-title {
+        font-size: 17px !important;
+        word-break: break-word !important;
+    }
+
+    /* Hero Card & Action Headers on Mobile */
+    .hero-card-header {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 14px !important;
+    }
+
+    .hero-card-header button,
+    .hero-card-header a,
+    .hero-card-header .btn-primary {
+        width: 100% !important;
+        text-align: center !important;
+        white-space: normal !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Search Mode Tabs on Mobile */
+    .search-mode-tabs-container {
+        flex-direction: column !important;
+        gap: 8px !important;
+    }
+
+    .search-tab-btn {
+        width: 100% !important;
+        padding: 10px 14px !important;
+        font-size: 13px !important;
+        justify-content: space-between !important;
+    }
+
     /* Grid columns on mobile */
     .grid-2, .grid-3, .grid-4, .grid-main-side {
         display: flex !important;
@@ -2213,11 +2259,14 @@ select.form-control option {
         box-sizing: border-box !important;
     }
 
-    /* Form controls full width on mobile */
+    /* Form controls full width & text truncation on mobile */
     .form-control, select.form-control, input.form-control {
         width: 100% !important;
+        max-width: 100% !important;
         box-sizing: border-box !important;
         font-size: 14px !important;
+        text-overflow: ellipsis !important;
+        overflow: hidden !important;
     }
 
     /* Leaflet Map height on mobile */

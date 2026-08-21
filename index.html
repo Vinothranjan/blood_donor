@@ -196,7 +196,7 @@
             <section id="portal-receiver" class="portal-section active">
 
                 <!-- Portal Header Strip -->
-                <div class="portal-hero-strip" style="margin-bottom:24px;">
+                <div class="portal-hero-strip hero-card-header" style="margin-bottom:24px;">
                     <div>
                         <h2 style="font-family:'Outfit',sans-serif;font-size:22px;font-weight:900;letter-spacing:-0.5px;">
                             <span data-i18n="portal1Title">🚨 Emergency Blood Request & District Search</span>
@@ -238,24 +238,15 @@
                     <!-- Main Content -->
                     <div>
                         <!-- Opening Welcome Banner for Patient/Hospital (Search Launcher) -->
-                        <div class="card patient-welcome-card" id="patient-welcome-card" style="margin-bottom:24px;background:linear-gradient(135deg, rgba(255,46,77,0.08) 0%, rgba(37,99,235,0.08) 100%);border:1px solid rgba(255,46,77,0.25);padding:28px;border-radius:var(--radius-xl);text-align:center;">
-                            <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,46,77,0.15);color:var(--primary);padding:6px 16px;border-radius:20px;font-size:12px;font-weight:800;letter-spacing:1px;text-transform:uppercase;margin-bottom:14px;">
-                                <span data-i18n="heroBadge">⚡ PAN-INDIA SMART BLOOD NETWORK</span>
-                            </div>
-                            <h2 style="font-family:'Outfit',sans-serif;font-size:26px;font-weight:900;margin-bottom:10px;color:var(--text-dark);">
-                                <span data-i18n="heroTitle">Need Emergency Blood or Verified Donors?</span>
-                            </h2>
-                            <p style="color:var(--text-muted);font-size:14px;max-width:580px;margin:0 auto 20px;line-height:1.6;">
-                                <span data-i18n="heroDesc">Search real-time available donors and verified blood bank stocks across all 36 Indian states & union territories. No password required for emergency search.</span>
+                        <div class="card" style="margin-bottom:24px;text-align:center;padding:36px 24px;background:linear-gradient(135deg, #0F2747 0%, #1565C0 100%);color:#fff;" id="search-prompt-card">
+                            <div style="font-size:54px;margin-bottom:12px;">🩸</div>
+                            <h2 style="font-family:'Outfit',sans-serif;font-size:26px;font-weight:900;margin-bottom:8px;color:#fff;" data-i18n="promptSearchTitle">Pan-India Smart Blood Finder</h2>
+                            <p style="color:#94A3B8;font-size:14px;max-width:560px;margin:0 auto 24px;line-height:1.6;" data-i18n="promptSearchDesc">
+                                Select your state, district and blood group above, then click 'Find Compatible Donors' to see available donors and verified blood banks in your area.
                             </p>
-                            <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
-                                <button class="btn-primary" style="padding:14px 28px;font-size:15px;font-weight:800;" onclick="revealPatientSearch()" data-i18n="btnFindNow">
-                                    🔍 Find Donors / Search Blood Now
-                                </button>
-                                <button class="btn-secondary" style="padding:14px 24px;font-size:14px;" onclick="openPatientQRGenModal()" data-i18n="btnGenQR">
-                                    📱 Generate Verification QR
-                                </button>
-                            </div>
+                            <button class="btn-primary" style="padding:16px 36px;font-size:16px;box-shadow:0 10px 30px rgba(211,47,47,0.4);" onclick="openPatientSearchArea()" id="landing-find-btn" data-i18n="btnLaunchSearch">
+                                ⚡ Find Compatible Donors & Trigger AI Dispatch
+                            </button>
                         </div>
 
                         <!-- SEARCH AREA — HIDDEN BY DEFAULT UNTIL "FIND DONORS" IS CLICKED -->
@@ -263,7 +254,7 @@
                             <!-- Search Form Card -->
                             <div class="card" style="margin-bottom:24px;">
                                 <!-- Search Mode Tabs (Primary Donors vs Secondary Blood Banks) -->
-                                <div style="display:flex;gap:12px;margin-bottom:20px;background:#F1F5F9;padding:6px;border-radius:var(--radius-lg);border:1px solid #E2E8F0;">
+                                <div class="search-mode-tabs-container" style="display:flex;gap:12px;margin-bottom:20px;background:#F1F5F9;padding:6px;border-radius:var(--radius-lg);border:1px solid #E2E8F0;">
                                     <button type="button" class="search-tab-btn active" id="search-tab-donors" onclick="switchSearchTab('donors')" style="flex:1;padding:12px;border:none;border-radius:var(--radius-md);font-weight:800;cursor:pointer;background:#FFFFFF;color:#0F2747;box-shadow:var(--shadow-xs);display:flex;align-items:center;justify-content:center;gap:8px;font-family:'Inter',sans-serif;transition:all 0.2s ease;">
                                         👤 Nearby Donors <span style="font-size:10px;background:#D32F2F;color:#fff;padding:2px 8px;border-radius:10px;font-weight:900;">PRIMARY</span>
                                     </button>
