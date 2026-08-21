@@ -2167,3 +2167,112 @@ select.form-control option {
         box-shadow: 0 0 18px rgba(21, 101, 192, 0.7);
     }
 }
+
+/* ==========================================================================
+   MOBILE & RESPONSIVE ALIGNMENT FIXES (Smartphones & Tablets)
+   ========================================================================== */
+@media (max-width: 768px) {
+    /* Header & Navbar mobile layout */
+    .header-container {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        padding: 10px 8px !important;
+        gap: 8px !important;
+    }
+
+    .brand-logo-wrap h1 {
+        font-size: 18px !important;
+    }
+
+    .brand-tagline {
+        display: none !important;
+    }
+
+    /* Grid columns on mobile */
+    .grid-2, .grid-3, .grid-4, .grid-main-side {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 16px !important;
+    }
+
+    /* Donor Card responsive alignment */
+    .donor-card {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 12px !important;
+        padding: 16px !important;
+    }
+
+    .donor-card .btn-success,
+    .donor-card a {
+        width: 100% !important;
+        text-align: center !important;
+        justify-content: center !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Form controls full width on mobile */
+    .form-control, select.form-control, input.form-control {
+        width: 100% !important;
+        box-sizing: border-box !important;
+        font-size: 14px !important;
+    }
+
+    /* Leaflet Map height on mobile */
+    #map-container {
+        height: 300px !important;
+        border-radius: 12px !important;
+    }
+
+    /* Modals & Dialogs on mobile */
+    .modal-content, .auth-modal-card {
+        width: 95vw !important;
+        max-width: 95vw !important;
+        margin: 10px auto !important;
+        padding: 20px 16px !important;
+        max-height: 90vh !important;
+        overflow-y: auto !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Toast notification alignment on mobile */
+    .lifepulse-toast-container {
+        left: 12px !important;
+        right: 12px !important;
+        bottom: 12px !important;
+        min-width: auto !important;
+        max-width: calc(100vw - 24px) !important;
+    }
+
+    .lifepulse-toast {
+        min-width: auto !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Hero section text & buttons on mobile */
+    .hero-title {
+        font-size: 24px !important;
+        line-height: 1.25 !important;
+    }
+
+    .hero-desc {
+        font-size: 14px !important;
+    }
+
+    .landing-stats {
+        flex-direction: column !important;
+        gap: 16px !important;
+        align-items: center !important;
+    }
+
+    .landing-stat {
+        border-right: none !important;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 12px !important;
+        width: 100% !important;
+        text-align: center !important;
+    }
+}
